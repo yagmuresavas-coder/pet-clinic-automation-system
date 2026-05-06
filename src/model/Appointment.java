@@ -1,7 +1,7 @@
 package model;
 
 public class Appointment { //Evcil hayvan için veterinerden randevu oluşturuyoruz
-private String date; //? neden private bide tarih saat niye string
+private String date; 
 private String time;
 private String description;
 private String vetName;
