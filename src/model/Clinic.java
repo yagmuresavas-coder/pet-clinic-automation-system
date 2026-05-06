@@ -5,7 +5,7 @@ public class Clinic { // Veteriner kliniği için kontrol sınıfı
 	public static void incrementCount() {
 		patientnumber++;
 	}
-	public static int hastanumarasigir() { //?
+	public static int hastanumarasigir() { 
 		return patientnumber;
 		
 	}
