@@ -1,23 +1,22 @@
 package model;
 
 public class Address {   //Adres sınıfını oluşturduk özelliklerini belirtiyoruz
-	private String street; // neden private?
+	private String street; 
 	private String city;   
-	private int postalcode; //postakodu neden string
+	private String postalcode; 
 	
-	public Address(String street, String city, int postalcode) { //girdi olarak alınan değerleri kendi belirlediğimiz değişkenlere atıyoruz
+	public Address(String street, String city, String postalcode) { //girdi olarak alınan değerleri kendi belirlediğimiz değişkenlere atıyoruz
 		this.street= street;
 		this.city= city;
 		this.postalcode= postalcode;
 	}
-	public 	String getStreet() { //?
+	public 	String getStreet() { 
 		return street;
-		
 	}
-	public String getCity() {  //?
+	public String getCity() {  
 		return city;
 	}
-	public int getpostalcode() {  //?
+	public String getPostalcode() {  
 		return postalcode;
 	}
 	public String toString() {  
