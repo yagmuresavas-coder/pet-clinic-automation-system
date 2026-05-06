@@ -1,8 +1,8 @@
 package İnterfaces;
 
 public interface Manageable {
-	void register(); //?
-	void displayInfo(); //?
+	void register(); 
+	void displayInfo(); 
 	
 
 }
