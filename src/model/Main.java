@@ -6,7 +6,8 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) {
-		
+
+
 		Owner owner =new Owner(" Yağmur "," Rümişoğlu ", " 111-2222-3333 "," feyza@mail.com ");
 		
 		System.out.println("========= HANGİ SİSTEMİ TERCİH EDECEKSİNİZ ==========\n Evcil Hayvan Sahiplendirme[1]\n Veteriner Randevu Sistemi[2]");
@@ -56,6 +57,9 @@ public class Main {
 		        Scanner scanner14 = new Scanner(System.in);
 		        System.out.print("Boy: ");
 		        double height = scanner14.nextDouble();
+
+
+
 
 		        Animal hayvan;
 		        

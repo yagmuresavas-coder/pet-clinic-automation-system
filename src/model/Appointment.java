@@ -28,6 +28,6 @@ public Appointment(String date,String time,Animal patient,String vetName,String 
 	this.description=description;
 }
 public String toString() { //atadığımız değişkenleri kullanıcının görmesi için yazdırıyoruz 
-	return " Tarih: " + date +  " Saat: "  + time +  "  Sahip: " + patient + "  Veteriner:" + vetName +  " " + " Açıklama: " + description;
+	return " Tarih: " + date +  " Saat: "  + time  + patient + "  Veteriner:" + vetName +  " " + " Açıklama: " + description;
 }
 }
