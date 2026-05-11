@@ -13,7 +13,34 @@ public class  Bird extends Animal {
 			this.beakStructure=beakStructure;
 			this.featherColor=featherColor;
 		}
-		
+	 public static Bird create(Scanner scanner, Owner owner)
+		 {
+			  System.out.print("Adı: ");
+		        String name = scanner.nextLine();
+		        System.out.print("Cinsi: ");
+		        String breed = scanner.nextLine();
+		        System.out.print("Yaş: ");
+		        int age = scanner.nextInt();
+		        System.out.print("Kilo: ");
+		        double weight = scanner.nextDouble();
+		        System.out.print("Boy: ");
+		        double height = scanner.nextDouble();
+		        scanner.nextLine();
+			   System.out.println("Uçabiliyor mu? (true)Evet ,(false)Hayır: ");
+				boolean canFly = scanner.nextBoolean();
+				scanner.nextLine();
+				System.out.println("Gaga Yapısı Nasıl: ");
+				String beakStructure = scanner.nextLine();
+				System.out.println("Tüy Rengi: ");
+				String featherColor = scanner.nextLine();
+				
+				System.out.println(""
+						+ "   ,_,\r\n"
+						+ "  (O,O)\r\n"
+						+ "  (   )\r\n"
+						+ "  -\"-\"-");
+				 return new Bird(name, breed, age, weight, height, owner, canFly,beakStructure, featherColor);
+		    }	
 	@Override
 	public String getType() {
 		return "Kuş";
