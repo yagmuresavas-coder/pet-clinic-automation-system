@@ -11,7 +11,50 @@ public class Cat extends Animal {
 			 this.isIndoor=isIndoor;
 			 this.isNeutered=isNeutered;
 		}
+      public static Cat create(Scanner scanner,Owner owner)
+   {
+	   System.out.print("Adı: ");
+       String name = scanner.nextLine();
+       System.out.print("Cinsi: ");
+       String breed = scanner.nextLine();
+       int age;
+		while (true) {
+		    System.out.print("Yaş: ");
+		    age = scanner.nextInt();
+		    if (age >= 0) break;
+		    System.out.println("Hata: Yaş negatif değer olamaz! Tekrar girin.");
+		}
 
+		double weight;
+		while (true) {
+		    System.out.print("Kilo: ");
+		    weight = scanner.nextDouble();
+		    if (weight >= 0) break;
+		    System.out.println("Hata: Kilo negatif olamaz! Tekrar girin.");
+		}
+
+		double height;
+		while (true) {
+		    System.out.print("Boy: ");
+		    height = scanner.nextDouble();
+		    if (height >= 0) break;
+		    System.out.println("Hata: Boy negatif olamaz! Tekrar girin.");
+		}
+       scanner.nextLine();
+   	System.out.print("Yaşam Alanı (true)Ev Kedisi , (false)Sokak Kedisi: ");
+	boolean isIndoor = scanner.nextBoolean();
+	System.out.print("Kısırlaştırıldı mı? (true)Evet ,(false)Hayır : ");
+	boolean isNeutered = scanner.nextBoolean();
+	scanner.nextLine();
+	System.out.println(""
+			+ " /\\_/\\\r\n"
+			+ " ( o.o )\r\n"
+			+ "  > ^ <\r\n"
+			+ " /  |  \\\r\n"
+			+ "/___|___\\");
+	
+	return new Cat(name,breed,age,weight,height,owner,isIndoor,isNeutered);
+   }
 	@Override
 	public String getType() {
 		return "Kedi";
