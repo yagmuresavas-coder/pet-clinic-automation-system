@@ -1,593 +1,501 @@
 package model;
 
-import staff.Veterinarian;
 import sahiplendirme.Quiz;
 import sahiplendirme.ResultEvaluator;
-
+import staff.Veterinarian;
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import java.util.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-/**
- * PetClinic - Veteriner Yönetim Sistemi
- * Ana GUI Sınıfı
- */
-public class GUI extends JFrame {
+public class MainGUI {
 
-    // ── Renkler ─────────────────────────────────────────────────────────────
-    private static final Color BG_DARK       = new Color(13, 17, 23);
-    private static final Color BG_CARD       = new Color(22, 27, 34);
-    private static final Color BG_HOVER      = new Color(30, 37, 46);
-    private static final Color ACCENT_TEAL   = new Color(32, 201, 151);
-    private static final Color ACCENT_BLUE   = new Color(56, 139, 253);
-    private static final Color ACCENT_PURPLE = new Color(139, 92, 246);
-    private static final Color ACCENT_ORANGE = new Color(251, 146, 60);
-    private static final Color TEXT_PRIMARY  = new Color(230, 237, 243);
-    private static final Color TEXT_MUTED    = new Color(125, 133, 144);
-    private static final Color BORDER_COLOR  = new Color(48, 54, 61);
-
-    // ── Fontlar ──────────────────────────────────────────────────────────────
-    private static final Font FONT_TITLE  = new Font("Segoe UI", Font.BOLD, 28);
-    private static final Font FONT_HEADER = new Font("Segoe UI", Font.BOLD, 16);
-    private static final Font FONT_BODY   = new Font("Segoe UI", Font.PLAIN, 14);
-    private static final Font FONT_SMALL  = new Font("Segoe UI", Font.PLAIN, 12);
-    private static final Font FONT_MONO   = new Font("Consolas", Font.PLAIN, 13);
-
-    // ── Veriler ──────────────────────────────────────────────────────────────
-    private Animal[] hayvanlar = new Animal[100];
-    private int hayvanSayisi   = 0;
-
-    private Owner owner = new Owner("Yağmur", "Rümişoğlu", "111-2222-3333", "feyza@mail.com",
+    // Mevcut veriler
+    static Owner owner = new Owner("Yağmur", "Rümişoğlu", "111-2222-3333", "feyza@mail.com",
             new Address("Atatürk Cad.", "İstanbul", "34000"));
 
-    private Veterinarian[] vets = {
-        new Veterinarian("Dr. Ali Yılmaz",  "ali@mail.com",    "555-111",
-                         "Veteriner Cerrahi",                  new String[]{"Pazartesi","Çarşamba","Cuma"}),
-        new Veterinarian("Dr. Ayşe Kaya",   "ayse@mail.com",   "555-222",
-                         "Veteriner Dahiliye",                  new String[]{"Salı","Perşembe"}),
-        new Veterinarian("Dr. Mehmet Öz",   "mehmet@mail.com", "555-333",
-                         "Veteriner Acil Tıp ve Yoğun Bakım",  new String[]{"Pazartesi","Salı","Cuma"})
+    static Veterinarian[] vets = {
+        new Veterinarian("Dr. Ali Yılmaz",  "ali@mail.com",    "555-111", "Cerrahi",         new String[]{"Pazartesi", "Çarşamba", "Cuma"}),
+        new Veterinarian("Dr. Ayşe Kaya",   "ayse@mail.com",   "555-222", "Dahiliye",         new String[]{"Salı", "Perşembe"}),
+        new Veterinarian("Dr. Mehmet Öz",   "mehmet@mail.com", "555-333", "Göz Hastalıkları", new String[]{"Pazartesi", "Salı", "Cuma"})
     };
 
-    // ── Bileşenler ───────────────────────────────────────────────────────────
-    private JPanel contentPanel;
-    private CardLayout cardLayout;
-    private DefaultTableModel animalTableModel;
+    static Animal[] hayvanlar = new Animal[100];
+    static int hayvanSayisi = 0;
 
-    public GUI() {
-        setTitle("🐾 PetClinic — Veteriner Yönetim Sistemi");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1200, 750);
-        setMinimumSize(new Dimension(900, 600));
-        setLocationRelativeTo(null);
+    static JFrame anaPencere;
 
-        getContentPane().setBackground(BG_DARK);
-        setLayout(new BorderLayout());
-
-        // KRİTİK DÜZELTME: Önce mainArea (cardLayout burada oluşuyor)
-        add(buildMainArea(),    BorderLayout.CENTER);
-        // Sonra sidebar (butonlar cardLayout'u kullanıyor)
-        add(buildSidebar(),     BorderLayout.WEST);
-
-        setVisible(true);
+    public static void main(String[] args) {
+        anaPencereAc();
     }
 
-    private JPanel buildSidebar() {
-        JPanel sidebar = new JPanel();
-        sidebar.setBackground(BG_CARD);
-        sidebar.setPreferredSize(new Dimension(220, 0));
-        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
-        sidebar.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, BORDER_COLOR));
+    // ─── ANA MENÜ ────────────────────────────────────────────────────────────
+    static void anaPencereAc() {
+        anaPencere = new JFrame("PetClinic Yönetim Sistemi");
+        anaPencere.setSize(420, 430);
+        anaPencere.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        anaPencere.setLocationRelativeTo(null);
 
-        JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 16, 20));
-        logoPanel.setBackground(BG_CARD);
-        logoPanel.setMaximumSize(new Dimension(220, 70));
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(30, 50, 30, 50));
 
-        JLabel logoIcon = new JLabel("🐾");
-        logoIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
+        JLabel baslik = new JLabel("PetClinic Yönetim Sistemi");
+        baslik.setFont(new Font("Arial", Font.BOLD, 18));
+        baslik.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel logoText = new JPanel();
-        logoText.setBackground(BG_CARD);
-        logoText.setLayout(new BoxLayout(logoText, BoxLayout.Y_AXIS));
-        JLabel appName = new JLabel("PetClinic");
-        appName.setFont(new Font("Segoe UI", Font.BOLD, 17));
-        appName.setForeground(TEXT_PRIMARY);
-        JLabel appSub = new JLabel("Vet Sistemi");
-        appSub.setFont(FONT_SMALL);
-        appSub.setForeground(ACCENT_TEAL);
-        logoText.add(appName);
-        logoText.add(appSub);
+        JLabel altBaslik = new JLabel("Hoşgeldiniz: " + owner.getFullName());
+        altBaslik.setFont(new Font("Arial", Font.PLAIN, 12));
+        altBaslik.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        logoPanel.add(logoIcon);
-        logoPanel.add(logoText);
-        sidebar.add(logoPanel);
+        JButton quizBtn        = butonOlustur("🐾  Hangi Hayvan Sana Uygun?");
+        JButton hayvanKayitBtn = butonOlustur("📝  Hayvan Kaydı");
+        JButton randevuBtn     = butonOlustur("📅  Randevu Oluştur");
+        JButton tibbikayitBtn  = butonOlustur("💉  Tıbbi Kayıt ve Aşı");
+        JButton kayitliBtn     = butonOlustur("📋  Kayıtlı Hayvanları Göster");
 
-        sidebar.add(makeSeparator());
-        sidebar.add(Box.createVerticalStrut(8));
+        quizBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { quizPenceresiAc(); }
+        });
+        hayvanKayitBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { hayvanKayitPenceresiAc(); }
+        });
+        randevuBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { randevuPenceresiAc(); }
+        });
+        tibbikayitBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { tibbikayitPenceresiAc(); }
+        });
+        kayitliBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) { kayitliHayvanlarPenceresiAc(); }
+        });
 
-        String[][] menuItems = {
-            {"🏠", "Ana Sayfa",       "home"},
-            {"🐶", "Hayvan Ekle",      "add_animal"},
-            {"📋", "Hayvan Listesi",   "animal_list"},
-            {"📅", "Randevu Al",       "appointment"},
-            {"💉", "Tıbbi Kayıt",      "medical"},
-            {"🎯", "Sahiplendirme",    "adoption"},
-            {"👨‍⚕️", "Veterinerler",   "vets"},
+        panel.add(baslik);
+        panel.add(Box.createRigidArea(new Dimension(0, 5)));
+        panel.add(altBaslik);
+        panel.add(Box.createRigidArea(new Dimension(0, 25)));
+        panel.add(quizBtn);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(hayvanKayitBtn);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(randevuBtn);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(tibbikayitBtn);
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        panel.add(kayitliBtn);
+
+        anaPencere.add(panel);
+        anaPencere.setVisible(true);
+    }
+
+    // ─── QUIZ PENCERESİ ──────────────────────────────────────────────────────
+    static void quizPenceresiAc() {
+
+        String[] sorular = {
+            "Günlük ne kadar aktif birisin?",
+            "Evde ne kadar zaman geçiriyorsun?",
+            "Hayvanınla ne tür bir bağ kurmak istersin?",
+            "Yaşadığın yer nasıl?",
+            "Hayvana ne kadar zaman ve para ayırabilirsin?",
+            "Ses ve gürültüyü nasıl karşılarsın?"
         };
 
-        ButtonGroup group = new ButtonGroup();
-        for (String[] item : menuItems) {
-            JToggleButton btn = buildMenuButton(item[0], item[1], item[2]);
-            group.add(btn);
-            sidebar.add(btn);
-            sidebar.add(Box.createVerticalStrut(2));
-            if (item[2].equals("home")) btn.setSelected(true);
+        String[][] secenekler = {
+            {"Çok aktifim, hareketi seviyorum", "Orta seviye, bazen dışarı çıkarım", "Evde oturmayı tercih ederim"},
+            {"Çoğunlukla evdeyim", "Yarı yarıya", "Çok az zaman geçiriyorum"},
+            {"Sarılmak, oynamak, yakın temas", "Birlikte vakit geçirmek ama bağımsız olsun", "İzlemek ve bakımını yapmak yeterli"},
+            {"Büyük ev veya bahçeli", "Normal büyüklükte daire", "Küçük daire"},
+            {"Çok fazla, sorun değil", "Orta düzeyde", "Az, düşük bakım isterim"},
+            {"Sorun değil, canlı bir ev severim", "Biraz ses tamam ama aşırı olmasın", "Sessiz bir ortam tercih ederim"}
+        };
+
+        // Her cevabın puanları [köpek, kedi, balık, kuş]
+        int[][][] puanlar = {
+            {{3,0,0,0}, {1,2,0,0}, {0,2,2,1}},
+            {{0,2,2,2}, {1,1,0,0}, {0,0,3,1}},
+            {{3,0,0,0}, {0,3,0,0}, {0,0,3,2}},
+            {{3,0,0,0}, {1,2,0,1}, {0,1,3,2}},
+            {{3,0,0,0}, {0,3,0,1}, {0,0,3,0}},
+            {{2,0,0,2}, {0,2,0,1}, {0,1,3,0}}
+        };
+
+        int[] toplamPuan  = {0, 0, 0, 0};
+        int[] soruIndeksi = {0};
+
+        JFrame pencere = new JFrame("Hangi Hayvan Sana Uygun?");
+        pencere.setSize(500, 380);
+        pencere.setLocationRelativeTo(anaPencere);
+
+        JPanel anaPanel = new JPanel();
+        anaPanel.setLayout(new BorderLayout(10, 10));
+        anaPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JPanel ustPanel = new JPanel();
+        ustPanel.setLayout(new BoxLayout(ustPanel, BoxLayout.Y_AXIS));
+
+        JLabel numaraLabel = new JLabel("Soru 1 / " + sorular.length);
+        numaraLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        numaraLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel soruLabel = new JLabel("<html><div style='text-align:center;width:400px'>" + sorular[0] + "</div></html>");
+        soruLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        soruLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        ustPanel.add(numaraLabel);
+        ustPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        ustPanel.add(soruLabel);
+
+        JPanel secenekPanel = new JPanel();
+        secenekPanel.setLayout(new BoxLayout(secenekPanel, BoxLayout.Y_AXIS));
+
+        ActionListener[] listener = new ActionListener[1];
+
+        listener[0] = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int secilenCevap = Integer.parseInt(e.getActionCommand());
+
+                // Puanları topla
+                for (int j = 0; j < 4; j++) {
+                    toplamPuan[j] += puanlar[soruIndeksi[0]][secilenCevap][j];
+                }
+
+                soruIndeksi[0]++;
+
+                if (soruIndeksi[0] < sorular.length) {
+                    // Sonraki soruya geç
+                    numaraLabel.setText("Soru " + (soruIndeksi[0] + 1) + " / " + sorular.length);
+                    soruLabel.setText("<html><div style='text-align:center;width:400px'>" + sorular[soruIndeksi[0]] + "</div></html>");
+
+                    secenekPanel.removeAll();
+                    for (int k = 0; k < secenekler[soruIndeksi[0]].length; k++) {
+                        JButton btn = secenekBtnOlustur(secenekler[soruIndeksi[0]][k], k, listener[0]);
+                        secenekPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+                        secenekPanel.add(btn);
+                    }
+                    secenekPanel.revalidate();
+                    secenekPanel.repaint();
+
+                } else {
+                    quizSonucGoster(toplamPuan, pencere);
+                }
+            }
+        };
+
+        // İlk sorunun seçeneklerini ekle
+        for (int k = 0; k < secenekler[0].length; k++) {
+            JButton btn = secenekBtnOlustur(secenekler[0][k], k, listener[0]);
+            secenekPanel.add(Box.createRigidArea(new Dimension(0, 8)));
+            secenekPanel.add(btn);
         }
 
-        sidebar.add(Box.createVerticalGlue());
-        sidebar.add(makeSeparator());
+        anaPanel.add(ustPanel, BorderLayout.NORTH);
+        anaPanel.add(secenekPanel, BorderLayout.CENTER);
 
-        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 12));
-        userPanel.setBackground(BG_CARD);
-        userPanel.setMaximumSize(new Dimension(220, 60));
-        JLabel userIcon = new JLabel("👤");
-        userIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 20));
-        JLabel userName = new JLabel(owner.getFullName());
-        userName.setFont(FONT_SMALL);
-        userName.setForeground(TEXT_MUTED);
-        userPanel.add(userIcon);
-        userPanel.add(userName);
-        sidebar.add(userPanel);
-
-        return sidebar;
+        pencere.add(anaPanel);
+        pencere.setVisible(true);
     }
 
-    private JToggleButton buildMenuButton(String icon, String label, String card) {
-        JToggleButton btn = new JToggleButton(icon + "  " + label) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                if (isSelected()) {
-                    g2.setColor(new Color(ACCENT_TEAL.getRed(), ACCENT_TEAL.getGreen(), ACCENT_TEAL.getBlue(), 30));
-                    g2.fillRoundRect(8, 2, getWidth()-16, getHeight()-4, 8, 8);
-                } else if (getModel().isRollover()) {
-                    g2.setColor(BG_HOVER);
-                    g2.fillRoundRect(8, 2, getWidth()-16, getHeight()-4, 8, 8);
-                }
-                g2.dispose();
-                super.paintComponent(g);
-            }
-        };
-        btn.setFont(FONT_BODY);
-        btn.setForeground(TEXT_MUTED);
-        btn.setBackground(new Color(0,0,0,0));
-        btn.setBorderPainted(false);
-        btn.setContentAreaFilled(false);
+    static JButton secenekBtnOlustur(String yazi, int indeks, ActionListener listener) {
+        JButton btn = new JButton(yazi);
+        btn.setActionCommand(String.valueOf(indeks));
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setMaximumSize(new Dimension(420, 40));
+        btn.setFont(new Font("Arial", Font.PLAIN, 13));
+        btn.setBackground(new Color(240, 240, 240));
         btn.setFocusPainted(false);
-        btn.setHorizontalAlignment(SwingConstants.LEFT);
-        btn.setMaximumSize(new Dimension(220, 40));
-        btn.setPreferredSize(new Dimension(220, 40));
-        btn.setBorder(BorderFactory.createEmptyBorder(0, 16, 0, 0));
-        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        btn.addItemListener(e -> {
-            if (e.getStateChange() == ItemEvent.SELECTED) {
-                btn.setForeground(ACCENT_TEAL);
-                cardLayout.show(contentPanel, card);
-            } else {
-                btn.setForeground(TEXT_MUTED);
-            }
-        });
+        btn.addActionListener(listener);
         return btn;
     }
 
-    private JPanel buildMainArea() {
-        cardLayout   = new CardLayout();
-        contentPanel = new JPanel(cardLayout);
-        contentPanel.setBackground(BG_DARK);
-
-        contentPanel.add(buildHomePage(),        "home");
-        contentPanel.add(buildAddAnimalPage(),  "add_animal");
-        contentPanel.add(buildAnimalListPage(), "animal_list");
-        contentPanel.add(buildAppointmentPage(),"appointment");
-        contentPanel.add(buildMedicalPage(),    "medical");
-        contentPanel.add(buildAdoptionPage(),   "adoption");
-        contentPanel.add(buildVetsPage(),       "vets");
-
-        return contentPanel;
-    }
-
-    private JPanel buildHomePage() {
-        JPanel page = darkPage();
-        page.setLayout(new BorderLayout(20, 20));
-        page.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-
-        JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(BG_DARK);
-        JLabel title = new JLabel("İyi Günler, " + owner.getFullName() + "! 👋");
-        title.setFont(FONT_TITLE);
-        title.setForeground(TEXT_PRIMARY);
-        JLabel subtitle = new JLabel("PetClinic Veteriner Yönetim Sistemine Hoşgeldiniz");
-        subtitle.setFont(FONT_BODY);
-        subtitle.setForeground(TEXT_MUTED);
-        header.add(title, BorderLayout.NORTH);
-        header.add(subtitle, BorderLayout.CENTER);
-        page.add(header, BorderLayout.NORTH);
-
-        JPanel statsRow = new JPanel(new GridLayout(1, 4, 16, 0));
-        statsRow.setBackground(BG_DARK);
-        statsRow.add(buildStatCard("🐾", "Kayıtlı Hayvan", String.valueOf(hayvanSayisi), ACCENT_TEAL));
-        statsRow.add(buildStatCard("👨‍⚕️", "Veteriner", String.valueOf(vets.length), ACCENT_BLUE));
-        statsRow.add(buildStatCard("📅", "Randevu", "—", ACCENT_PURPLE));
-        statsRow.add(buildStatCard("💉", "Aşı Kaydı", "—", ACCENT_ORANGE));
-        page.add(statsRow, BorderLayout.CENTER);
-
-        JPanel quickPanel = new JPanel(new GridLayout(1, 3, 16, 0));
-        quickPanel.setBackground(BG_DARK);
-        quickPanel.add(buildQuickCard("🐶", "Hayvan Ekle", "Yeni hasta kaydı oluştur", ACCENT_TEAL));
-        quickPanel.add(buildQuickCard("📅", "Randevu Al", "Veteriner seçerek randevu oluştur", ACCENT_BLUE));
-        quickPanel.add(buildQuickCard("🎯", "Sahiplendirme", "Sana uygun hayvanı bul", ACCENT_PURPLE));
-        page.add(quickPanel, BorderLayout.SOUTH);
-
-        return page;
-    }
-
-    private JPanel buildStatCard(String icon, String label, String value, Color accent) {
-        JPanel card = new JPanel();
-        card.setBackground(BG_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(
-            new RoundedBorder(12, BORDER_COLOR),
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-
-        JLabel ico = new JLabel(icon);
-        ico.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 28));
-        ico.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel val = new JLabel(value);
-        val.setFont(new Font("Segoe UI", Font.BOLD, 32));
-        val.setForeground(accent);
-        val.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lbl = new JLabel(label);
-        lbl.setFont(FONT_SMALL);
-        lbl.setForeground(TEXT_MUTED);
-        lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        card.add(ico); card.add(Box.createVerticalStrut(12));
-        card.add(val); card.add(Box.createVerticalStrut(4));
-        card.add(lbl);
-        return card;
-    }
-
-    private JPanel buildQuickCard(String icon, String title, String desc, Color accent) {
-        JPanel card = new JPanel();
-        card.setBackground(BG_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(
-            new RoundedBorder(12, BORDER_COLOR),
-            BorderFactory.createEmptyBorder(20, 20, 20, 20)
-        ));
-        card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-        card.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        JLabel ico = new JLabel(icon + "  " + title);
-        ico.setFont(FONT_HEADER);
-        ico.setForeground(accent);
-        ico.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel dsc = new JLabel("<html><body style='width:160px'>" + desc + "</body></html>");
-        dsc.setFont(FONT_SMALL); dsc.setForeground(TEXT_MUTED);
-        dsc.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        card.add(ico); card.add(Box.createVerticalStrut(10));
-        card.add(dsc);
-
-        card.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) { card.setBackground(BG_HOVER); }
-            public void mouseExited(MouseEvent e)  { card.setBackground(BG_CARD);  }
-        });
-        return card;
-    }
-
-    private JPanel buildAddAnimalPage() {
-        JPanel page = darkPage();
-        page.setLayout(new BorderLayout(20, 20));
-        page.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        page.add(pageHeader("🐾 Yeni Hayvan Kaydı", "Kliniğe yeni bir hasta ekleyin"), BorderLayout.NORTH);
-
-        JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(BG_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(
-            new RoundedBorder(12, BORDER_COLOR),
-            BorderFactory.createEmptyBorder(28, 32, 28, 32)
-        ));
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        String[] turler = {"Köpek", "Kedi", "Kuş", "Balık", "At"};
-        JComboBox<String> turBox = styledCombo(turler);
-        JTextField nameField  = styledField("Hayvanın adı");
-        JTextField breedField = styledField("Irk/Cins");
-        JTextField ageField   = styledField("Yaş");
-        JTextField weightField= styledField("Kilo (kg)");
-        JTextField heightField= styledField("Boy (cm)");
-
-        JPanel extraPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        extraPanel.setBackground(BG_CARD);
-        JCheckBox check1 = styledCheckbox("Özellik 1");
-        JCheckBox check2 = styledCheckbox("Özellik 2");
-        JTextField extraField1 = styledField("—");
-        JTextField extraField2 = styledField("—");
-        extraPanel.add(check1); extraPanel.add(check2);
-        extraPanel.add(extraField1); extraPanel.add(extraField2);
-
-        turBox.addActionListener(e -> {
-            int idx = turBox.getSelectedIndex();
-            switch (idx) {
-                case 0: check1.setText("Eğitimli mi?"); check2.setVisible(false); extraField1.setVisible(false); extraField2.setVisible(false); break;
-                case 1: check1.setText("Ev kedisi mi?"); check2.setText("Kısırlaştırıldı mı?"); check2.setVisible(true); extraField1.setVisible(false); extraField2.setVisible(false); break;
-                case 2: check1.setText("Uçabiliyor mu?"); check2.setVisible(false); extraField1.setVisible(true); extraField2.setVisible(true); break;
-                case 3: check1.setVisible(false); check2.setVisible(false); extraField1.setVisible(true); extraField2.setVisible(true); break;
-                case 4: check1.setText("Yarış atı mı?"); check2.setVisible(false); extraField1.setVisible(false); extraField2.setVisible(false); break;
-            }
-            extraPanel.revalidate(); extraPanel.repaint();
-        });
-        turBox.setSelectedIndex(0);
-
-        int row = 0;
-        addFormRow(card, gbc, row++, "Hayvan Türü", turBox);
-        addFormRow(card, gbc, row++, "Ad",           nameField);
-        addFormRow(card, gbc, row++, "Irk",          breedField);
-        addFormRow(card, gbc, row++, "Yaş",          ageField);
-        addFormRow(card, gbc, row++, "Kilo (kg)",    weightField);
-        addFormRow(card, gbc, row++, "Boy (cm)",     heightField);
-        addFormRow(card, gbc, row++, "Özellikler",   extraPanel);
-
-        JButton saveBtn = accentButton("✓ Hayvanı Kaydet", ACCENT_TEAL);
-        gbc.gridx=0; gbc.gridy=row; gbc.gridwidth=2; gbc.fill=GridBagConstraints.NONE;
-        gbc.insets = new Insets(20, 8, 8, 8);
-        card.add(saveBtn, gbc);
-
-        saveBtn.addActionListener(e -> {
-            try {
-                String name = nameField.getText().trim();
-                String breed = breedField.getText().trim();
-                if (name.isEmpty() || breed.isEmpty()) throw new Exception("Ad ve ırk boş olamaz!");
-                int ageVal = Integer.parseInt(ageField.getText().trim());
-                double wt = Double.parseDouble(weightField.getText().trim());
-                double ht = Double.parseDouble(heightField.getText().trim());
-                
-                // Buraya Animal sınıflarının nesne oluşturma mantığı gelecek
-                showSuccess("✅ " + name + " başarıyla kaydedildi! (Diziye ekleme mantığı sınıflarınıza göre güncellenmelidir)");
-                nameField.setText(""); breedField.setText(""); ageField.setText("");
-                weightField.setText(""); heightField.setText("");
-            } catch (Exception ex) {
-                showError("Hata: " + ex.getMessage());
-            }
-        });
-
-        JScrollPane scroll = new JScrollPane(card);
-        scroll.setBorder(null); scroll.getViewport().setBackground(BG_DARK);
-        page.add(scroll, BorderLayout.CENTER);
-        return page;
-    }
-
-    private JPanel buildAnimalListPage() {
-        JPanel page = darkPage();
-        page.setLayout(new BorderLayout(20, 20));
-        page.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        page.add(pageHeader("📋 Kayıtlı Hayvanlar", "Sistemdeki tüm hasta kayıtları"), BorderLayout.NORTH);
-
-        String[] cols = {"Ad", "Tür", "Irk", "Yaş", "Kilo(kg)", "Boy(cm)", "Sahibi"};
-        animalTableModel = new DefaultTableModel(cols, 0) { public boolean isCellEditable(int r, int c) { return false; } };
-        JTable table = buildDarkTable(animalTableModel);
-
-        JScrollPane scroll = new JScrollPane(table);
-        styleScrollPane(scroll);
-        page.add(scroll, BorderLayout.CENTER);
-
-        JButton refresh = accentButton("⟳ Listeyi Yenile", ACCENT_BLUE);
-        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        btnRow.setBackground(BG_DARK); btnRow.add(refresh);
-        page.add(btnRow, BorderLayout.SOUTH);
-        return page;
-    }
-
-    private JPanel buildAppointmentPage() {
-        JPanel page = darkPage();
-        page.setLayout(new BorderLayout(20, 20));
-        page.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        page.add(pageHeader("📅 Randevu Oluştur", "Veteriner seçerek randevu alın"), BorderLayout.NORTH);
-
-        JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(BG_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(new RoundedBorder(12, BORDER_COLOR), BorderFactory.createEmptyBorder(28, 32, 28, 32)));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8); gbc.anchor = GridBagConstraints.WEST;
-
-        String[] vetNames = new String[vets.length];
-        for (int i = 0; i < vets.length; i++) vetNames[i] = vets[i].getName() + " (" + vets[i].getSpecialization() + ")";
-        
-        JComboBox<String> vetBox = styledCombo(vetNames);
-        JComboBox<String> animalBox = styledCombo(new String[]{"— Hayvan Seçin —"});
-        JTextField dateField = styledField("Örn: 20.05.2026");
-        JTextField timeField = styledField("Örn: 14:30");
-        JTextArea descArea = new JTextArea(3, 20);
-        descArea.setBackground(BG_DARK); descArea.setForeground(TEXT_PRIMARY);
-        descArea.setBorder(BorderFactory.createCompoundBorder(new RoundedBorder(8, BORDER_COLOR), BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-
-        int row = 0;
-        addFormRow(card, gbc, row++, "Veteriner Seçin", vetBox);
-        addFormRow(card, gbc, row++, "Hasta (Hayvan)",  animalBox);
-        addFormRow(card, gbc, row++, "Tarih",            dateField);
-        addFormRow(card, gbc, row++, "Saat",            timeField);
-        addFormRow(card, gbc, row++, "Açıklama",        descArea);
-
-        JButton btn = accentButton("📅 Randevu Oluştur", ACCENT_PURPLE);
-        gbc.gridx=0; gbc.gridy=row; gbc.gridwidth=2; gbc.insets = new Insets(20,8,8,8);
-        card.add(btn, gbc);
-
-        JScrollPane scroll = new JScrollPane(card);
-        scroll.setBorder(null); scroll.getViewport().setBackground(BG_DARK);
-        page.add(scroll, BorderLayout.CENTER);
-        return page;
-    }
-
-    private JPanel buildMedicalPage() {
-        JPanel page = darkPage();
-        page.setLayout(new BorderLayout(20, 20));
-        page.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        page.add(pageHeader("💉 Tıbbi Kayıt & Aşı Takibi", "Hasta tıbbi kayıtlarını yönetin"), BorderLayout.NORTH);
-
-        JPanel card = new JPanel(new GridBagLayout());
-        card.setBackground(BG_CARD);
-        card.setBorder(BorderFactory.createCompoundBorder(new RoundedBorder(12, BORDER_COLOR), BorderFactory.createEmptyBorder(28, 32, 28, 32)));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(8, 8, 8, 8); gbc.anchor = GridBagConstraints.WEST;
-
-        JComboBox<String> animalBox = styledCombo(new String[]{"— Hayvan seçin —"});
-        JTextField dateField     = styledField("Tarih (10.05.2026)");
-        JTextField diagField     = styledField("Tanı");
-        JTextField treatField    = styledField("Tedavi");
-        JTextField vaccineField  = styledField("Aşı adı (Örn: Kuduz)");
-
-        int row = 0;
-        addFormRow(card, gbc, row++, "Hasta (Hayvan)",     animalBox);
-        addFormRow(card, gbc, row++, "Tarih",              dateField);
-        addFormRow(card, gbc, row++, "Tanı",               diagField);
-        addFormRow(card, gbc, row++, "Tedavi",             treatField);
-        addFormRow(card, gbc, row++, "Aşı Bilgisi",        vaccineField);
-
-        JButton btn = accentButton("💾 Kaydı Oluştur", ACCENT_ORANGE);
-        gbc.gridx=0; gbc.gridy=row; gbc.gridwidth=2; gbc.insets=new Insets(20,8,8,8);
-        card.add(btn, gbc);
-
-        JScrollPane scroll = new JScrollPane(card);
-        scroll.setBorder(null); scroll.getViewport().setBackground(BG_DARK);
-        page.add(scroll, BorderLayout.CENTER);
-        return page;
-    }
-
-    private JPanel buildAdoptionPage() {
-        JPanel page = darkPage();
-        page.setLayout(new BorderLayout(20, 20));
-        page.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        page.add(pageHeader("🎯 Kişisel Sahiplendirme Testi", "Sana en uygun hayvanı bulalım"), BorderLayout.NORTH);
-
-        JPanel quizCard = new JPanel(new BorderLayout(0, 20));
-        quizCard.setBackground(BG_CARD);
-        quizCard.setBorder(BorderFactory.createCompoundBorder(new RoundedBorder(12, BORDER_COLOR), BorderFactory.createEmptyBorder(28, 32, 28, 32)));
-
-        JLabel qText = new JLabel("Hoşgeldiniz! Sahiplendirme testi yakında burada olacak.");
-        qText.setFont(FONT_HEADER); qText.setForeground(TEXT_PRIMARY);
-        quizCard.add(qText, BorderLayout.CENTER);
-
-        page.add(quizCard, BorderLayout.NORTH);
-        return page;
-    }
-
-    private JPanel buildVetsPage() {
-        JPanel page = darkPage();
-        page.setLayout(new BorderLayout(20, 20));
-        page.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
-        page.add(pageHeader("👨‍⚕️ Veteriner Hekimler", "Klinikteki tüm doktorlar"), BorderLayout.NORTH);
-
-        JPanel grid = new JPanel(new GridLayout(1, vets.length, 16, 0));
-        grid.setBackground(BG_DARK);
-        Color[] colors = {ACCENT_TEAL, ACCENT_BLUE, ACCENT_PURPLE};
-
-        for (int i = 0; i < vets.length; i++) {
-            Veterinarian v = vets[i];
-            JPanel card = new JPanel();
-            card.setBackground(BG_CARD);
-            card.setBorder(BorderFactory.createCompoundBorder(new RoundedBorder(12, BORDER_COLOR), BorderFactory.createEmptyBorder(24, 20, 24, 20)));
-            card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-
-            JLabel name = new JLabel(v.getName());
-            name.setFont(FONT_HEADER); name.setForeground(colors[i]);
-            name.setAlignmentX(Component.CENTER_ALIGNMENT);
-            JLabel spec = new JLabel(v.getSpecialization());
-            spec.setFont(FONT_SMALL); spec.setForeground(TEXT_MUTED);
-            spec.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-            card.add(name); card.add(Box.createVerticalStrut(4));
-            card.add(spec); grid.add(card);
-        }
-        page.add(grid, BorderLayout.CENTER);
-        return page;
-    }
-
-    // ── Yardımcı Metodlar ──────────────────────────────────────────
-    private JPanel darkPage() { JPanel p = new JPanel(); p.setBackground(BG_DARK); return p; }
-    private JPanel pageHeader(String title, String subtitle) {
-        JPanel h = new JPanel(); h.setBackground(BG_DARK); h.setLayout(new BoxLayout(h, BoxLayout.Y_AXIS));
-        JLabel t = new JLabel(title); t.setFont(FONT_TITLE); t.setForeground(TEXT_PRIMARY);
-        JLabel s = new JLabel(subtitle); s.setFont(FONT_BODY); s.setForeground(TEXT_MUTED);
-        h.add(t); h.add(Box.createVerticalStrut(4)); h.add(s); h.add(Box.createVerticalStrut(20));
-        return h;
-    }
-    private void addFormRow(JPanel panel, GridBagConstraints gbc, int row, String label, JComponent field) {
-        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.fill = GridBagConstraints.NONE;
-        JLabel lbl = new JLabel(label); lbl.setFont(FONT_SMALL); lbl.setForeground(TEXT_MUTED); lbl.setPreferredSize(new Dimension(140, 26));
-        panel.add(lbl, gbc);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL; gbc.weightx = 1.0;
-        field.setPreferredSize(new Dimension(320, field instanceof JTextArea ? 70 : 36));
-        panel.add(field, gbc); gbc.weightx = 0;
-    }
-    private JTextField styledField(String hint) {
-        JTextField f = new JTextField(); f.setBackground(BG_DARK); f.setForeground(TEXT_PRIMARY); f.setFont(FONT_BODY); f.setCaretColor(ACCENT_TEAL);
-        f.setBorder(BorderFactory.createCompoundBorder(new RoundedBorder(8, BORDER_COLOR), BorderFactory.createEmptyBorder(6, 12, 6, 12)));
-        return f;
-    }
-    private JComboBox<String> styledCombo(String[] items) {
-        JComboBox<String> c = new JComboBox<>(items); c.setBackground(BG_DARK); c.setForeground(TEXT_PRIMARY);
-        c.setBorder(new RoundedBorder(8, BORDER_COLOR)); return c;
-    }
-    private JCheckBox styledCheckbox(String text) {
-        JCheckBox cb = new JCheckBox(text); cb.setBackground(BG_CARD); cb.setForeground(TEXT_PRIMARY); cb.setFocusPainted(false); return cb;
-    }
-    private JButton accentButton(String text, Color color) {
-        JButton btn = new JButton(text) {
-            @Override protected void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D) g.create(); g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(getModel().isPressed() ? color.darker() : getModel().isRollover() ? color.brighter() : color);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10); g2.dispose(); super.paintComponent(g);
-            }
+    static void quizSonucGoster(int[] toplamPuan, JFrame pencere) {
+        String[] hayvanIsimleri = {"Köpek", "Kedi", "Balık", "Kuş"};
+        String[] aciklamalar = {
+            "Aktif, sosyal ve sadık bir yapın var.\nÖneri: Golden Retriever veya Beagle",
+            "Bağımsız ama şefkatli bir yapıyı tercih ediyorsun.\nÖneri: British Shorthair veya Van Kedisi",
+            "Huzurlu ve sakin bir yaşam tarzın var.\nÖneri: Japon Balığı veya Betta",
+            "Neşeli sesleri ve canlılığı seviyorsun.\nÖneri: Muhabbet Kuşu veya Kanarya"
         };
-        btn.setForeground(Color.WHITE); btn.setFont(new Font("Segoe UI", Font.BOLD, 14)); btn.setBorderPainted(false);
-        btn.setContentAreaFilled(false); btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(200, 42)); return btn;
-    }
-    private JTable buildDarkTable(DefaultTableModel model) {
-        JTable table = new JTable(model); table.setBackground(BG_CARD); table.setForeground(TEXT_PRIMARY); table.setRowHeight(38);
-        table.setSelectionBackground(new Color(ACCENT_TEAL.getRed(), ACCENT_TEAL.getGreen(), ACCENT_TEAL.getBlue(), 50));
-        table.getTableHeader().setBackground(BG_DARK); table.getTableHeader().setForeground(TEXT_MUTED); return table;
-    }
-    private void styleScrollPane(JScrollPane sp) { sp.setBorder(new RoundedBorder(12, BORDER_COLOR)); sp.getViewport().setBackground(BG_CARD); }
-    private JSeparator makeSeparator() { JSeparator sep = new JSeparator(); sep.setForeground(BORDER_COLOR); sep.setMaximumSize(new Dimension(220, 1)); return sep; }
-    private void showSuccess(String msg) { JOptionPane.showMessageDialog(this, msg, "✅ Başarılı", JOptionPane.INFORMATION_MESSAGE); }
-    private void showError(String msg) { JOptionPane.showMessageDialog(this, msg, "❌ Hata", JOptionPane.ERROR_MESSAGE); }
 
-    static class RoundedBorder implements Border {
-        private int radius; private Color color;
-        RoundedBorder(int radius, Color color) { this.radius = radius; this.color = color; }
-        public Insets getBorderInsets(Component c) { return new Insets(radius/2, radius/2, radius/2, radius/2); }
-        public boolean isBorderOpaque() { return false; }
-        public void paintBorder(Component c, Graphics g, int x, int y, int w, int h) {
-            Graphics2D g2 = (Graphics2D) g.create(); g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(color); g2.drawRoundRect(x, y, w-1, h-1, radius, radius); g2.dispose();
+        int enYuksekIndeks = 0;
+        for (int i = 1; i < toplamPuan.length; i++) {
+            if (toplamPuan[i] > toplamPuan[enYuksekIndeks]) {
+                enYuksekIndeks = i;
+            }
         }
+
+        JOptionPane.showMessageDialog(pencere,
+                "Sana en uygun hayvan:\n\n"
+                + hayvanIsimleri[enYuksekIndeks].toUpperCase() + "\n\n"
+                + aciklamalar[enYuksekIndeks],
+                "Quiz Sonucu",
+                JOptionPane.INFORMATION_MESSAGE);
+
+        pencere.dispose();
     }
 
-    public static void main(String[] args) {
-        try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); } catch (Exception ignored) {}
-        SwingUtilities.invokeLater(GUI::new);
+    // ─── HAYVAN KAYIT PENCERESİ ──────────────────────────────────────────────
+    static void hayvanKayitPenceresiAc() {
+        JFrame pencere = new JFrame("Hayvan Kaydı");
+        pencere.setSize(400, 380);
+        pencere.setLocationRelativeTo(anaPencere);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel turLabel = new JLabel("Hayvan Türü:");
+        String[] turler = {"Köpek", "Kedi", "Kuş", "Balık", "At"};
+        JComboBox<String> turSecici = new JComboBox<>(turler);
+
+        JLabel adiLabel     = new JLabel("Adı:");
+        JTextField adiField = new JTextField();
+
+        JLabel cinsiLabel     = new JLabel("Cinsi:");
+        JTextField cinsiField = new JTextField();
+
+        JLabel yasLabel     = new JLabel("Yaş:");
+        JTextField yasField = new JTextField();
+
+        JLabel kiloLabel     = new JLabel("Kilo (kg):");
+        JTextField kiloField = new JTextField();
+
+        JLabel boyLabel     = new JLabel("Boy (cm):");
+        JTextField boyField = new JTextField();
+
+        JButton kaydetBtn = new JButton("Kaydet");
+        kaydetBtn.setBackground(new Color(70, 130, 180));
+        kaydetBtn.setForeground(Color.WHITE);
+        kaydetBtn.setFocusPainted(false);
+
+        kaydetBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    String ad    = adiField.getText();
+                    String cinsi = cinsiField.getText();
+                    int yas      = Integer.parseInt(yasField.getText());
+                    double kilo  = Double.parseDouble(kiloField.getText());
+                    double boy   = Double.parseDouble(boyField.getText());
+                    int tur      = turSecici.getSelectedIndex() + 1;
+
+                    Animal hayvan = null;
+
+                    if (tur == 1) {
+                        int egitim = JOptionPane.showConfirmDialog(pencere, "Eğitimi var mı?", "Köpek", JOptionPane.YES_NO_OPTION);
+                        hayvan = new Dog(ad, cinsi, yas, kilo, boy, owner, egitim == JOptionPane.YES_OPTION);
+
+                    } else if (tur == 2) {
+                        int yasam = JOptionPane.showConfirmDialog(pencere, "Ev kedisi mi?", "Kedi", JOptionPane.YES_NO_OPTION);
+                        int kisir = JOptionPane.showConfirmDialog(pencere, "Kısırlaştırıldı mı?", "Kedi", JOptionPane.YES_NO_OPTION);
+                        hayvan = new Cat(ad, cinsi, yas, kilo, boy, owner, yasam == JOptionPane.YES_OPTION, kisir == JOptionPane.YES_OPTION);
+
+                    } else if (tur == 3) {
+                        int ucabilir   = JOptionPane.showConfirmDialog(pencere, "Uçabiliyor mu?", "Kuş", JOptionPane.YES_NO_OPTION);
+                        String gaga    = JOptionPane.showInputDialog(pencere, "Gaga Yapısı:");
+                        String tuyRenk = JOptionPane.showInputDialog(pencere, "Tüy Rengi:");
+                        hayvan = new Bird(ad, cinsi, yas, kilo, boy, owner, ucabilir == JOptionPane.YES_OPTION, gaga, tuyRenk);
+
+                    } else if (tur == 4) {
+                        String suTipi = JOptionPane.showInputDialog(pencere, "Su Tipi:");
+                        String renk   = JOptionPane.showInputDialog(pencere, "Rengi:");
+                        hayvan = new Fish(ad, cinsi, yas, kilo, boy, owner, suTipi, renk);
+
+                    } else {
+                        int yaris = JOptionPane.showConfirmDialog(pencere, "Yarış atı mı?", "At", JOptionPane.YES_NO_OPTION);
+                        hayvan = new Horse(ad, cinsi, yas, kilo, boy, owner, yaris == JOptionPane.YES_OPTION);
+                    }
+
+                    hayvan.register();
+                    hayvanlar[hayvanSayisi] = hayvan;
+                    hayvanSayisi++;
+
+                    JOptionPane.showMessageDialog(pencere, ad + " başarıyla kaydedildi!", "Başarılı", JOptionPane.INFORMATION_MESSAGE);
+                    pencere.dispose();
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(pencere, "Yaş, kilo ve boy sayı olmalıdır!", "Hata", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+
+        panel.add(turLabel);     panel.add(turSecici);
+        panel.add(adiLabel);     panel.add(adiField);
+        panel.add(cinsiLabel);   panel.add(cinsiField);
+        panel.add(yasLabel);     panel.add(yasField);
+        panel.add(kiloLabel);    panel.add(kiloField);
+        panel.add(boyLabel);     panel.add(boyField);
+        panel.add(new JLabel()); panel.add(kaydetBtn);
+
+        pencere.add(panel);
+        pencere.setVisible(true);
+    }
+
+    // ─── RANDEVU PENCERESİ ───────────────────────────────────────────────────
+    static void randevuPenceresiAc() {
+        if (hayvanSayisi == 0) {
+            JOptionPane.showMessageDialog(anaPencere, "Önce hayvan kaydı yapmalısınız!", "Uyarı", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JFrame pencere = new JFrame("Randevu Oluştur");
+        pencere.setSize(400, 350);
+        pencere.setLocationRelativeTo(anaPencere);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel hayvanLabel = new JLabel("Hayvan:");
+        String[] hayvanIsimleri = new String[hayvanSayisi];
+        for (int i = 0; i < hayvanSayisi; i++) {
+            hayvanIsimleri[i] = hayvanlar[i].getName() + " (" + hayvanlar[i].getType() + ")";
+        }
+        JComboBox<String> hayvanSecici = new JComboBox<>(hayvanIsimleri);
+
+        JLabel vetLabel = new JLabel("Veteriner:");
+        String[] vetIsimleri = new String[vets.length];
+        for (int i = 0; i < vets.length; i++) {
+            vetIsimleri[i] = vets[i].getName() + " - " + vets[i].getSpecialization();
+        }
+        JComboBox<String> vetSecici = new JComboBox<>(vetIsimleri);
+
+        JLabel tarihLabel     = new JLabel("Tarih (10.05.2026):");
+        JTextField tarihField = new JTextField();
+
+        JLabel saatLabel     = new JLabel("Saat (14:30):");
+        JTextField saatField = new JTextField();
+
+        JLabel aciklamaLabel     = new JLabel("Açıklama:");
+        JTextField aciklamaField = new JTextField();
+
+        JButton olusturBtn = new JButton("Randevu Oluştur");
+        olusturBtn.setBackground(new Color(70, 130, 180));
+        olusturBtn.setForeground(Color.WHITE);
+        olusturBtn.setFocusPainted(false);
+
+        olusturBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Animal secilenHayvan = hayvanlar[hayvanSecici.getSelectedIndex()];
+                String secilenVet    = vets[vetSecici.getSelectedIndex()].getName();
+                Appointment randevu  = new Appointment(tarihField.getText(), saatField.getText(), secilenHayvan, secilenVet, aciklamaField.getText());
+                JOptionPane.showMessageDialog(pencere, "Randevunuz oluşturuldu!\n\n" + randevu, "Başarılı", JOptionPane.INFORMATION_MESSAGE);
+                pencere.dispose();
+            }
+        });
+
+        panel.add(hayvanLabel);   panel.add(hayvanSecici);
+        panel.add(vetLabel);      panel.add(vetSecici);
+        panel.add(tarihLabel);    panel.add(tarihField);
+        panel.add(saatLabel);     panel.add(saatField);
+        panel.add(aciklamaLabel); panel.add(aciklamaField);
+        panel.add(new JLabel());  panel.add(olusturBtn);
+
+        pencere.add(panel);
+        pencere.setVisible(true);
+    }
+
+    // ─── TIBBİ KAYIT PENCERESİ ───────────────────────────────────────────────
+    static void tibbikayitPenceresiAc() {
+        if (hayvanSayisi == 0) {
+            JOptionPane.showMessageDialog(anaPencere, "Önce hayvan kaydı yapmalısınız!", "Uyarı", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        JFrame pencere = new JFrame("Tıbbi Kayıt ve Aşı");
+        pencere.setSize(400, 400);
+        pencere.setLocationRelativeTo(anaPencere);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(0, 2, 10, 10));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        JLabel hayvanLabel = new JLabel("Hayvan:");
+        String[] hayvanIsimleri = new String[hayvanSayisi];
+        for (int i = 0; i < hayvanSayisi; i++) {
+            hayvanIsimleri[i] = hayvanlar[i].getName() + " (" + hayvanlar[i].getType() + ")";
+        }
+        JComboBox<String> hayvanSecici = new JComboBox<>(hayvanIsimleri);
+
+        JLabel tarihLabel     = new JLabel("Tarih:");
+        JTextField tarihField = new JTextField();
+
+        JLabel taniLabel     = new JLabel("Hastalık Tanısı:");
+        JTextField taniField = new JTextField();
+
+        JLabel tedaviLabel     = new JLabel("Tedavi:");
+        JTextField tedaviField = new JTextField();
+
+        JLabel asiLabel     = new JLabel("Aşı Adı:");
+        JTextField asiField = new JTextField();
+
+        JLabel sonrakiLabel     = new JLabel("Sonraki Aşı Tarihi:");
+        JTextField sonrakiField = new JTextField();
+
+        JButton kaydetBtn = new JButton("Kaydet");
+        kaydetBtn.setBackground(new Color(70, 130, 180));
+        kaydetBtn.setForeground(Color.WHITE);
+        kaydetBtn.setFocusPainted(false);
+
+        kaydetBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                Animal secilenHayvan = hayvanlar[hayvanSecici.getSelectedIndex()];
+                MedicalRecord kayit  = new MedicalRecord(tarihField.getText(), taniField.getText(), tedaviField.getText(), secilenHayvan);
+                Vaccine asi          = new Vaccine(asiField.getText(), tarihField.getText(), sonrakiField.getText(), secilenHayvan);
+                JOptionPane.showMessageDialog(pencere,
+                        "Kayıtlar oluşturuldu!\n\nTıbbi Kayıt: " + kayit + "\n\nAşı Kaydı: " + asi,
+                        "Başarılı", JOptionPane.INFORMATION_MESSAGE);
+                pencere.dispose();
+            }
+        });
+
+        panel.add(hayvanLabel);  panel.add(hayvanSecici);
+        panel.add(tarihLabel);   panel.add(tarihField);
+        panel.add(taniLabel);    panel.add(taniField);
+        panel.add(tedaviLabel);  panel.add(tedaviField);
+        panel.add(asiLabel);     panel.add(asiField);
+        panel.add(sonrakiLabel); panel.add(sonrakiField);
+        panel.add(new JLabel()); panel.add(kaydetBtn);
+
+        pencere.add(panel);
+        pencere.setVisible(true);
+    }
+
+    // ─── KAYITLI HAYVANLAR PENCERESİ ─────────────────────────────────────────
+    static void kayitliHayvanlarPenceresiAc() {
+        JFrame pencere = new JFrame("Kayıtlı Hayvanlar");
+        pencere.setSize(500, 400);
+        pencere.setLocationRelativeTo(anaPencere);
+
+        JTextArea metin = new JTextArea();
+        metin.setEditable(false);
+        metin.setFont(new Font("Monospaced", Font.PLAIN, 13));
+        metin.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        if (hayvanSayisi == 0) {
+            metin.setText("Henüz kayıtlı hayvan bulunmuyor.");
+        } else {
+            String icerik = "";
+            for (int i = 0; i < hayvanSayisi; i++) {
+                icerik = icerik + (i + 1) + ". Hayvan\n";
+                icerik = icerik + "-----------------------------\n";
+                icerik = icerik + hayvanlar[i].toString() + "\n\n";
+            }
+            metin.setText(icerik);
+        }
+
+        pencere.add(new JScrollPane(metin));
+        pencere.setVisible(true);
+    }
+
+    // ─── YARDIMCI: Buton oluşturucu ──────────────────────────────────────────
+    static JButton butonOlustur(String yazi) {
+        JButton btn = new JButton(yazi);
+        btn.setFont(new Font("Arial", Font.PLAIN, 14));
+        btn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btn.setMaximumSize(new Dimension(280, 42));
+        btn.setBackground(new Color(70, 130, 180));
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        return btn;
     }
 }
